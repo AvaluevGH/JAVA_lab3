@@ -65,7 +65,9 @@ public class Main extends JFrame {
         JMenu tableMenu = new JMenu("Таблица");
         // Добавить его в главное меню
         menuBar.add(tableMenu);
-
+        // Создать пункт меню "Справка"
+        JMenu infoMenu = new JMenu("Справка");
+        menuBar.add(infoMenu);
         // Создать новое "действие" по сохранению в текстовый файл
         Action saveToTextAction = new AbstractAction( "Сохранить в текстовый файл") {
             public void actionPerformed(ActionEvent event) {
@@ -128,8 +130,16 @@ public class Main extends JFrame {
             }
         });
 
-
-
+        Action aboutProgrammAction = new AbstractAction("О программе") {
+            public void actionPerformed(ActionEvent event) {
+                JLabel info = new JLabel("Расширение возможностей графического интерфейса пользователя");
+                info.setHorizontalTextPosition(JLabel.CENTER);
+                info.setVerticalTextPosition(JLabel.BOTTOM);
+                info.setIconTextGap(10);
+                JOptionPane.showMessageDialog(Main.this, info, "О программе", JOptionPane.PLAIN_MESSAGE);
+            }
+        };
+        infoMenuItem = infoMenu.add(aboutProgrammAction);
         // Создать текстовое поле для ввода значения длиной в 10 символов
         // со значением по умолчанию 0.0
         textFieldFrom = new JTextField("0.0", 10);
