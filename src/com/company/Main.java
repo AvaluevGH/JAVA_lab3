@@ -57,14 +57,48 @@ public class Main extends JFrame {
         JMenuBar menuBar = new JMenuBar();
         // Установить меню в качестве главного меню приложения
         setJMenuBar(menuBar);
-
-
+        // Добавить в меню пункт меню "Файл"
+        JMenu fileMenu = new JMenu("Файл");
+        // Добавить его в главное меню
+        menuBar.add(fileMenu);
         // Создать пункт меню "Таблица"
         JMenu tableMenu = new JMenu("Таблица");
         // Добавить его в главное меню
         menuBar.add(tableMenu);
 
+        // Создать новое "действие" по сохранению в текстовый файл
+        Action saveToTextAction = new AbstractAction( "Сохранить в текстовый файл") {
+            public void actionPerformed(ActionEvent event) {
+                if (fileChooser == null) {
+                    // Если экземпляр диалогового окна "Открыть файл" ещѐ не создан,
+                    // то создать его
+                    fileChooser = new JFileChooser();
+                    // и инициализировать текущей директорией
+                    fileChooser.setCurrentDirectory(new File("."));
+                }
+                // Показать диалоговое окно
+                if (fileChooser.showSaveDialog(Main.this) == JFileChooser.APPROVE_OPTION){
+                    // Если результат его показа успешный,
+                    // сохранить данные в текстовый файл
+                    saveToTextFile(fileChooser.getSelectedFile());
+                }
+            }
+        };
+        // Добавить соответствующий пункт подменю в меню "Файл"
+        saveToTextMenuItem = fileMenu.add(saveToTextAction);
 
+        fileMenu.addMenuListener(new MenuListener() {
+            @Override
+            public void menuSelected(MenuEvent e) {
+                // По умолчанию пункт меню является недоступным (данных ещѐ нет)
+                if (data == null) saveToTextMenuItem.setEnabled(false);
+                else saveToTextMenuItem.setEnabled(true);
+            }
+            @Override
+            public void menuDeselected(MenuEvent e) { }
+            @Override
+            public void menuCanceled(MenuEvent e) { }
+        });
         // Создать новое действие по поиску значений многочлена
         Action searchValueAction = new AbstractAction("Найти значение функции") {
             public void actionPerformed(ActionEvent event) {
@@ -201,7 +235,24 @@ public class Main extends JFrame {
         getContentPane().add(hBoxResult, BorderLayout.CENTER);
     }
 
-   
+    protected void saveToTextFile(File selectedFile) {// Создать  символьный поток вывода, направленный в указанный файл
+        try{
+
+            PrintStream out = new PrintStream(selectedFile); // Записать в поток вывода заголовочные сведения
+            out.println("Результаты табулирования функции:");
+            out.println("Интервал от " + data.getFrom() + " до " + data.getTo()+ " с шагом " +
+                    data.getStep() + " и параметром " + data.getParameter());
+
+            for (int i = 0; i < data.getRowCount(); i++)// Записать в поток вывода значения в точках
+            {
+                out.println("Значение в точке " + data.getValueAt(i,0)  + " равно " + data.getValueAt(i,1));
+            }
+            out.close();// Закрыть поток вывода
+        } catch (FileNotFoundException e){
+            // Исключительную ситуацию "ФайлНеНайден" в данном случае можно не обрабатывать,
+            // так как мы файл создаём, а не открываем для чтения
+        }
+    }
 
     public static void main(String[] args){ // Создать экземпляр главного окна, передав ему коэффициенты
         Main frame = new Main();
