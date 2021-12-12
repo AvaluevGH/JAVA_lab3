@@ -46,7 +46,7 @@ public class FunctionTableModel extends AbstractTableModel{
         // Вычислить значение X как НАЧАЛО_ОТРЕЗКА + ШАГ*НОМЕР_СТРОКИ
         Double x = from + step * rowIndex;
 
-        Double y=Math.pow(x,3);
+        Double y=parameter+x*2;
         Boolean z = y >0;
         switch (columnIndex){
             case 0: return x;
